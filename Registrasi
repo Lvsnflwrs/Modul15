@@ -1,0 +1,124 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Channels;
+using System.Threading.Tasks;
+
+namespace Modul15_1302220077
+{
+    internal class Registrasi
+    {
+        public string Username;
+        public string Password;
+        public user User;
+        public const String filePath = @"config.json";
+
+        public Registrasi(string username, string password)
+        {
+            Username = username;
+            Password = password;
+
+            if (Usernamevalid(username) && Passwordvalid(password))
+            {
+                WriteNewConfigFile();
+                Console.WriteLine("User baru berhasil disimpan");
+            }
+        }
+
+        public bool Usernamevalid(string username) { 
+            bool valid = true;
+            if (username.Length < 8) 
+            {
+                Console.WriteLine("Username harus lebih dari 8 karakter");
+                valid = false;
+            }
+
+            if (username.Length > 20) 
+            {
+                Console.WriteLine("Username tidak boleh lebih dari 20 karakter");
+                valid = false;
+            }
+
+            string angka = @"[0-9]";
+            Regex Angka = new Regex(angka);
+
+            if (!Angka.Match(this.Username).Success) 
+            {
+                Console.WriteLine("Username harus mengandung angka");
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        public bool Passwordvalid(string password)
+        {
+            bool valid = true;
+            if (password.Length < 8)
+            {
+                Console.WriteLine("Password harus lebih dari 8 karakter");
+                valid = false;
+            }
+
+            if (this.Password.Contains(Username))        
+            {
+                Console.WriteLine("Password tidak boleh sama dengan username");
+                valid = false;
+            }
+
+            string karakter = @"([A-z]+)[!@#$%^&*]";
+            Regex unik = new Regex(karakter);
+
+            if (!unik.Match(this.Password).Success) 
+            {
+                Console.WriteLine("Password harus mengandung karakter unik");
+                valid = false;
+            }
+            return valid;
+        }
+
+        public void hashingPassword(string password)
+        {
+            bool pass = Passwordvalid(password);
+            if (pass)
+            {
+                Console.WriteLine(pass.GetHashCode());
+            }
+        }
+
+        private user ReadConfigFile()
+        {
+            String configJsonData = File.ReadAllText(filePath);
+            User = JsonSerializer.Deserialize<user>(configJsonData);
+            return User;
+        }
+
+        private void WriteNewConfigFile()
+        {
+            JsonSerializerOptions options = new JsonSerializerOptions()
+            {
+                WriteIndented = true
+            };
+            String jsonString = JsonSerializer.Serialize(User, options);
+            File.WriteAllText("C:\\Users\\PRAKTIKAN\\Documents", jsonString);
+        }
+
+        public class user { 
+            public string Username {  get; set; }
+            public string Password { get; set; }
+
+            public user() { 
+            
+            }
+
+            public user(string username, string password)
+            {
+                this.Username = username;
+                this.Password = password;
+            }
+        }
+    }
+}
