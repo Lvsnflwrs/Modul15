@@ -13,13 +13,16 @@ namespace Modul15_1302220077
     {
         public string Username;
         public string Password;
-        public user User;
+        public User user;
         public const String filePath = @"config.json";
 
         public Registrasi(string username, string password)
         {
             Username = username;
             Password = password;
+            user = new User();
+            user.Username = username;
+            user.Password = password;
 
             if (Usernamevalid(username) && Passwordvalid(password))
             {
@@ -89,11 +92,11 @@ namespace Modul15_1302220077
             }
         }
 
-        private user ReadConfigFile()
+        private User ReadConfigFile()
         {
             String configJsonData = File.ReadAllText(filePath);
-            User = JsonSerializer.Deserialize<user>(configJsonData);
-            return User;
+            user = JsonSerializer.Deserialize<User>(configJsonData);
+            return user;
         }
 
         private void WriteNewConfigFile()
@@ -102,19 +105,19 @@ namespace Modul15_1302220077
             {
                 WriteIndented = true
             };
-            String jsonString = JsonSerializer.Serialize(User, options);
-            File.WriteAllText("C:\\Users\\PRAKTIKAN\\Documents", jsonString);
+            String jsonString = JsonSerializer.Serialize(user, options);
+            File.WriteAllText("NewUser1.json", jsonString);
         }
 
-        public class user { 
+        public class User { 
             public string Username {  get; set; }
             public string Password { get; set; }
 
-            public user() { 
+            public User() { 
             
             }
 
-            public user(string username, string password)
+            public User(string username, string password)
             {
                 this.Username = username;
                 this.Password = password;
